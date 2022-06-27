@@ -4,7 +4,7 @@
 
 {% block content %}
 
-<form action="/test" method="POST" class="flex  justify-evenly gap-4 p-4 w-full">
+<form action="/profile" method="POST" class="flex  justify-evenly gap-4 p-4 w-full">
             {% csrf_token %}
             <div class="relative flex gap-4 flex-wrap items-stretch w-full transition-all rounded-lg ease-soft">
     <span class="text-size-sm ease-soft leading-5.6 absolute z-50 -ml-px flex h-full items-center whitespace-nowrap rounded-lg rounded-tr-none rounded-br-none border border-r-0 border-transparent bg-transparent py-2 px-2.5 text-center font-normal text-slate-500 transition-all">
@@ -17,8 +17,9 @@
 </div>
 </form>
 
-<div class="w-full px-6 py-6 mx-auto">
-    <div class="w-full max-w-full px-3 lg-max:mt-6 xl:w-3/12">
+{% if name %}
+<div class="w-full flex flex-wrap px-6 py-6 mx-auto">
+    <div class="w-full max-w-full p-3  xl:w-3/12">
        <div class="relative flex flex-col min-w-0 break-words bg-white border-0 shadow-soft-xl rounded-2xl bg-clip-border">
           <div class="p-4 pb-0 mb-0 bg-white border-b-0 rounded-t-2xl">
              <div class="flex flex-wrap -mx-3">
@@ -51,5 +52,32 @@
           </div>
        </div>
     </div>
+
+    <div class="flex flex-wrap w-full max-w-full  gap-8 lg:gap-0 xl:w-3/12">
+      <div class="w-full max-w-full p-3 mt-0">
+     <div class="border-black/12.5 shadow-soft-xl relative z-20 flex min-w-0 flex-col break-words rounded-2xl border-0 border-solid bg-white bg-clip-border">
+       <div class="flex-auto p-4">
+            {% autoescape off %}
+            {{pie_chart}}
+            {% endautoescape %}
+         </div>
+       </div>
+     </div>
+    </div>
+
+    <div class="flex flex-wrap w-full max-w-full  gap-8 lg:gap-0 xl:w-6/12">
+      <div class="w-full max-w-full p-3 mt-0">
+     <div class="border-black/12.5 shadow-soft-xl relative z-20 flex min-w-0 flex-col break-words rounded-2xl border-0 border-solid bg-white bg-clip-border">
+       <div class="flex-auto p-4">
+            {% autoescape off %}
+            {{neg_graph}}
+            {% endautoescape %}
+         </div>
+       </div>
+     </div>
+    </div>
+    
 </div>
+{% endif %}
+
 {% endblock content %}

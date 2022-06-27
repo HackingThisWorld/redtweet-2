@@ -1,20 +1,19 @@
 import os
 import pandas as pd
 import tweepy
-# from textblob import TextBlob
+import nltk
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from deep_translator import GoogleTranslator
-
-# import numpy as np 
-
+import numpy as np 
+import plotly.express as px
 
 
 # confidential
-consumer_secret = os.environ['consumer_secret']
-consumer_key = os.environ['consumer_key']
-access_token = os.environ['access_token']
-access_token_secret = os.environ['access_token_secret']
-bearer_token = os.environ['bearer_token']
+consumer_secret = os.environ['CONSUMER_SECRET']
+consumer_key = os.environ['CONSUMER_KEY']
+access_token = os.environ['ACCESS_TOKEN']
+access_token_secret = os.environ['ACCESS_TOKEN_SECRET']
+bearer_token = os.environ['BEARER_TOKEN']
 
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
@@ -83,12 +82,36 @@ def getTweet(id):
 
 
 def getUser(id):
-    user = api.get_user(id)
+    user = api.get_user(screen_name=id)
     posts = api.user_timeline(screen_name = id, count = 200, language = "en", tweet_mode = "extended")
-    df = pd.DataFrame([GoogleTranslator(source='auto', target='en').translate(tweet.full_text) for tweet in posts], columns = ["Tweets"])
+    df_children = []
+    neg_hash = []
+    for tweet in posts:
+        try:
+            translated = GoogleTranslator(source='auto', target='en').translate(tweet.full_text)
+        except:
+            translated = tweet.full_text
+        score = analyzer.polarity_scores(translated)['compound']
+        overall = "Postive" if score>0 else "Negative" if score <0 else  "Neutral"
+        data = [translated,overall,score]
+        df_children.append(data)
+        if score<0:
+            neg_hash += [entity["text"] for entity in tweet.entities["hashtags"]]
+    df_tweets = pd.DataFrame(df_children,columns = ["Tweets","Polarity","Score"])
     
-    
-    data = {
+    # negative tweets chart
+    freq = nltk.FreqDist(neg_hash)
+    d = pd.DataFrame({"Hashtag": list(freq.keys()), "Count": list(freq.values())})
+    d = d.nlargest(columns = "Count", n = 10)
+    fig = px.bar(d,x = "Hashtag", y = "Count",color="Hashtag" ,title="Negative Topics")
+    neg_graph = fig.to_html(full_html=False)
+
+    # pie chart
+    fig = px.pie(df_tweets, names='Polarity', hole = 0.3,) 
+    fig.update_traces(hoverinfo='label+percent', textfont_size=20,
+                  marker=dict(line=dict(color='#000000', width=2)))  
+    pie_chart = fig.to_html(full_html=False)
+    result = {
         "name": user.name,
         "description":user.description,
         "location": user.location,
@@ -96,5 +119,8 @@ def getUser(id):
         "followers": user.followers_count,
         "followings": user.friends_count,
         "is_bot": False,
-        # " "
+        "overall": df_tweets['Polarity'].max(),
+        "neg_graph":neg_graph,
+        "pie_chart":pie_chart
     }
+    return result

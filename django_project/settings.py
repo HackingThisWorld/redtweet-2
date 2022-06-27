@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 X_FRAME_OPTIONS = '*'
-
+CSRF_TRUSTED_ORIGINS = ['https://techakhil-me-hackingthisworld-redtweet-2-wq7vr5qvcwxj-8000.githubpreview.dev']
 # Application definition
 
 INSTALLED_APPS = [

@@ -66,11 +66,11 @@ def Test(request):
     return render(request,'test.html',context=context)
 
 def Profile(request):
-    context = {"url":False}
+    context = {"name":False}
     if request.method == "POST":
-        link = request.POST['link']
-        id = link.split('/')[-1]
-        context = tweetmodel.getTweet(id)
+        id = request.POST['link']
+        print(id)
+        context = tweetmodel.getUser(id)
     return render(request,'profile.html',context=context)
 
 def Hashtag(request):
