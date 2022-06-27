@@ -107,7 +107,7 @@ def getUser(id):
     neg_graph = fig.to_html(full_html=False)
 
     # pie chart
-    fig = px.pie(df_tweets, names='Polarity', hole = 0.3,) 
+    fig = px.pie(df_tweets, names='Polarity', hole = 0.3,title='Summary') 
     fig.update_traces(hoverinfo='label+percent', textfont_size=20,
                   marker=dict(line=dict(color='#000000', width=2)))  
     pie_chart = fig.to_html(full_html=False)
