@@ -86,6 +86,7 @@ def getUser(id):
     posts = api.user_timeline(screen_name = id, count = 200, language = "en", tweet_mode = "extended")
     df_children = []
     neg_hash = []
+    all_hash = []
     for tweet in posts:
         try:
             translated = GoogleTranslator(source='auto', target='en').translate(tweet.full_text)
@@ -95,23 +96,36 @@ def getUser(id):
         overall = "Postive" if score>0 else "Negative" if score <0 else  "Neutral"
         data = [translated,overall,score]
         df_children.append(data)
+        l = [entity["text"] for entity in tweet.entities["hashtags"]]
+        all_hash += l
         if score<0:
-            neg_hash += [entity["text"] for entity in tweet.entities["hashtags"]]
+            neg_hash += l
     df_tweets = pd.DataFrame(df_children,columns = ["Tweets","Polarity","Score"])
     
+    # all tweets chart
+    freq = nltk.FreqDist(all_hash)
+    d = pd.DataFrame({"Hashtag": list(freq.keys()), "Count": list(freq.values())})
+    d = d.nlargest(columns = "Count", n = 10)
+    fig = px.bar(d,x = "Hashtag", y = "Count",color="Hashtag" ,title="Overall Topics")
+    all_graph = fig.to_html(full_html=False)
+
+
     # negative tweets chart
     freq = nltk.FreqDist(neg_hash)
     d = pd.DataFrame({"Hashtag": list(freq.keys()), "Count": list(freq.values())})
-    d = d.nlargest(columns = "Count", n = 10)
+    d = d.nlargest(columns = "Count", n = 5)
     fig = px.bar(d,x = "Hashtag", y = "Count",color="Hashtag" ,title="Negative Topics")
     neg_graph = fig.to_html(full_html=False)
 
     # pie chart
-    fig = px.pie(df_tweets, names='Polarity', hole = 0.3,title='Summary') 
-    fig.update_traces(hoverinfo='label+percent', textfont_size=20,
-                  marker=dict(line=dict(color='#000000', width=2)))  
+    fig = px.pie(df_tweets, names='Polarity',color_discrete_map={'Positive':'#00cc96',
+                                 'Negative':'#ef553b',
+                                 'Neutral':'#fff'}, hole = 0.3,title='Summary') 
+    fig.update_layout(margin=dict(t=0, b=0, l=0, r=0))
+    fig.update_traces(hoverinfo='label+percent', marker=dict(line=dict(color='#000000', width=2)))  
     pie_chart = fig.to_html(full_html=False)
     result = {
+        "img_url": user.profile_image_url_https,
         "name": user.name,
         "description":user.description,
         "location": user.location,
@@ -121,6 +135,7 @@ def getUser(id):
         "is_bot": False,
         "overall": df_tweets['Polarity'].max(),
         "neg_graph":neg_graph,
+        "all_graph":all_graph,
         "pie_chart":pie_chart
     }
     return result
