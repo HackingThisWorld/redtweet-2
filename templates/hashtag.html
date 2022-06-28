@@ -1,0 +1,68 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+
+{% block content %}
+
+<form action="/hashtag" method="POST" class="flex  justify-evenly gap-4 p-4 w-full">
+   {% csrf_token %}
+   <div class="relative flex gap-4 flex-wrap items-stretch w-full transition-all rounded-lg ease-soft">
+      <span
+         class="text-size-sm ease-soft leading-5.6 absolute z-50 -ml-px flex h-full items-center whitespace-nowrap rounded-lg rounded-tr-none rounded-br-none border border-r-0 border-transparent bg-transparent py-2 px-2.5 text-center font-normal text-slate-500 transition-all">
+         <i class="fas fa-hashtag" aria-hidden="true"></i>
+      </span>
+      <input name="link" type="text"
+         class="pl-8.75 text-size-sm focus:shadow-soft-primary-outline ease-soft w-1/100 leading-5.6 relative -ml-px block min-w-0 flex-auto rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding py-2 pr-3 text-gray-700 transition-all placeholder:text-gray-500 focus:border-fuchsia-300 focus:outline-none focus:transition-shadow"
+         placeholder="hashtag, keywords, topics...." />
+      <button type="submit"
+         class="font-bol bg-gradient-to-r from-fuchsia-400 to-purple-500 hover:from-pink-500 hover:to-orange-500 text-white font-semibold px-6 py-3 rounded-md">
+         Analyze
+      </button>
+   </div>
+</form>
+
+{% if name %}
+<div class="w-full flex flex-wrap px-6 py-6 mx-auto">
+   <div class="flex flex-wrap w-full max-w-full  gap-8 lg:gap-0 xl:w-6/12">
+      <div class="w-full max-w-full p-3 mt-0">
+         <div
+            class="border-black/12.5 shadow-soft-xl relative z-20 flex min-w-0 flex-col break-words rounded-2xl border-0 border-solid bg-white bg-clip-border">
+            <div class="flex-auto p-4">
+               {% autoescape off %}
+               {{pie_chart}}
+               {% endautoescape %}
+            </div>
+         </div>
+      </div>
+   </div>
+
+   <div class="flex flex-wrap w-full max-w-full  gap-8 lg:gap-0 xl:w-6/12">
+      <div class="w-full max-w-full p-3 mt-0">
+         <div
+            class="border-black/12.5 shadow-soft-xl relative z-20 flex min-w-0 flex-col break-words rounded-2xl border-0 border-solid bg-white bg-clip-border">
+            <div class="flex-auto p-4">
+               {% autoescape off %}
+               {{neg_graph}}
+               {% endautoescape %}
+            </div>
+         </div>
+      </div>
+   </div>
+
+   <div class="flex flex-wrap w-full max-w-full ">
+      <div class="w-full max-w-full p-3 mt-0">
+         <div
+            class="border-black/12.5 shadow-soft-xl relative z-20 flex min-w-0 flex-col break-words rounded-2xl border-0 border-solid bg-white bg-clip-border">
+            <div class="flex-auto p-4">
+               {% autoescape off %}
+               {{all_graph}}
+               {% endautoescape %}
+            </div>
+         </div>
+      </div>
+   </div>
+
+</div>
+{% endif %}
+
+{% endblock content %}

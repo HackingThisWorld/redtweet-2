@@ -74,9 +74,9 @@ def Profile(request):
     return render(request,'profile.html',context=context)
 
 def Hashtag(request):
-    context = {"url":False}
+    context = {"name":False}
     if request.method == "POST":
-        link = request.POST['link']
-        id = link.split('/')[-1]
-        context = tweetmodel.getTweet(id)
-    return render(request,'test.html',context=context)
+        id = request.POST['link']
+        print(id)
+        context = tweetmodel.getHashtag(id)
+    return render(request,'hashtag.html',context=context)
